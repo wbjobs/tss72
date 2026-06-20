@@ -1,7 +1,44 @@
 const express = require('express');
+const Joi = require('joi');
 const RlsPolicyService = require('../services/rlsPolicy.service');
+const { ConditionValidator } = require('../security/conditionValidator');
 
 const router = express.Router({ mergeParams: true });
+
+const validateSchema = Joi.object({
+  custom_condition: Joi.string().optional(),
+  table_name: Joi.string().optional(),
+  column_name: Joi.string().optional(),
+  condition_operator: Joi.string().optional(),
+  condition_value: Joi.alternatives().try(Joi.array(), Joi.string(), Joi.number(), Joi.boolean()).optional(),
+  role_id: Joi.string().uuid().optional(),
+  tenant_id: Joi.string().uuid().optional(),
+}).or('custom_condition', 'column_name');
+
+router.post('/validate', async (req, res) => {
+  try {
+    const { error, value } = validateSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        valid: false,
+        errors: [{ message: error.details[0].message }]
+      });
+    }
+
+    const policyData = req.params.tenantId
+      ? { ...value, tenant_id: req.params.tenantId }
+      : value;
+
+    const result = ConditionValidator.validatePolicy(policyData);
+
+    res.status(result.valid ? 200 : 422).json(result);
+  } catch (err) {
+    res.status(500).json({
+      valid: false,
+      errors: [{ message: err.message }]
+    });
+  }
+});
 
 router.get('/', async (req, res) => {
   try {
