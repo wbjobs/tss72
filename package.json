@@ -1,0 +1,46 @@
+{
+  "name": "multi-tenant-row-level-security",
+  "version": "1.0.0",
+  "description": "多租户数据库行级安全策略中间件 - 为多租户SaaS应用提供数据库行级安全策略的配置和管理",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest --verbose --coverage",
+    "test:watch": "jest --watch",
+    "migrate": "node src/database/migrate.js"
+  },
+  "keywords": [
+    "multi-tenant",
+    "row-level-security",
+    "postgresql",
+    "rls",
+    "middleware"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1",
+    "joi": "^17.11.0",
+    "node-sql-parser": "^4.18.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/server.js",
+      "!src/database/migrate.js"
+    ]
+  }
+}
